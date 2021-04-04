@@ -1,0 +1,11 @@
+FROM alpine:latest
+RUN apk update && apk upgrade
+RUN apk add --update --no-cache python3 gcc libc-dev python3-dev && ln -sf python3 /usr/bin/python
+RUN python3 -m ensurepip
+RUN python3 -m pip install --upgrade pip
+RUN python3 -m pip install wheel setuptools
+COPY /requirements.txt /requirements.txt
+RUN pip3 install -r requirements.txt
+COPY ./ /
+COPY /blockchain.fake /blockchain.dat
+RUN rm -rf /blockchain.fake

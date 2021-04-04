@@ -1,0 +1,63 @@
+version: "3.9"
+services:
+
+  node1:
+    image: runestone:latest
+    container_name: "node1"
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    environment:
+      - PEERS=node3:8002,node2:8001
+      - NODE_PORT=8000
+    ports:
+      - 8000:8000
+    command: ["python3", "server.py"]
+
+  node2:
+    image: runestone:latest
+    container_name: "node2"
+    environment:
+      - PEERS=node3:8002,node1:8000
+      - NODE_PORT=8001
+    ports:
+      - 8001:8001
+    command: ["python3", "server.py"]
+
+  node3:
+    image: runestone:latest
+    container_name: "node3"
+    environment:
+      - PEERS=node2:8001,node1:8000
+      - NODE_PORT=8002
+    ports:
+      - 8002:8002
+    command: ["python3", "server.py"]
+
+  miner1:
+    image: runestone:latest
+    container_name: "miner1"
+    environment:
+      - PEERS=node1:8000
+      - NODE_PORT=8000
+    command: ["python3", "miner.py"]
+
+  miner2:
+    image: runestone:latest
+    container_name: "miner2"
+    environment:
+      - PEERS=node1:8000
+      - NODE_PORT=8000
+    command: ["python3", "miner.py"]
+
+  redis:
+    image: redis:latest
+
+
+  tests:
+    image: runestone:latest
+    container_name: "tests"
+    environment:
+      - PEERS=node1:8000,node2:8001,node3:8002
+      - NODE_PORT=8003
+    command: ["python3", "-m", "unittest", "tests/test_simulations.py"]
