@@ -1,0 +1,10 @@
+blockchain.dat
+blockchain.fake
+.idea
+__pycache__
+*.pyc
+*.DS_Store
+private_key.asc
+public_key.asc
+seed
+tests/wallets/*
