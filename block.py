@@ -1,7 +1,7 @@
 import json
 import logging
-from hashlib import sha512
 import time
+from hashlib import sha512
 
 from transaction import Transaction
 
@@ -13,7 +13,6 @@ class Block(object):
         self.sha512hash = kwargs.get('sha512hash')
         self.data = kwargs.get('data')
         self.magic_number = kwargs.get('magic_number')
-        self.wallets = kwargs.get('tests/wallets')
         self.transactions = list()
         self.blockchain_snapshot = str(kwargs.get('blockchain_snapshot'))
 
@@ -35,8 +34,15 @@ class Block(object):
             transaction = t.from_string(transaction)
             self.transactions.append(transaction)
 
-    # Difficulty increases by + 1 every 3 years
-    # Todo: Change this when it goes live
+    @staticmethod
+    def block_to_serialized(block):
+        assert isinstance(block, dict)
+        transactions_string = str()
+        for _, sha512hash in enumerate(block):
+            transaction = block[sha512hash]
+            transactions_string = transactions_string + str(transaction) + "\n"
+        return transactions_string
+
     @staticmethod
     def get_current_difficulty(timestamp):
         return int(((1/93312000) * timestamp) - (138191839/10368000))
@@ -72,15 +78,6 @@ class Block(object):
             str(self.blockchain_snapshot),
             self.magic_number,
         )
-
-    @staticmethod
-    def block_to_serialized(block):
-        assert isinstance(block, dict)
-        transactions_string = str()
-        for _, sha512hash in enumerate(block):
-            transaction = block[sha512hash]
-            transactions_string = transactions_string + str(transaction) + "\n"
-        return transactions_string
 
     def deserialize(self):
         transactions = self.data.split("\n")

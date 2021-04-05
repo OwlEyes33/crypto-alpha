@@ -34,22 +34,6 @@ services:
       - 8002:8002
     command: ["python3", "server.py"]
 
-  miner1:
-    image: runestone:latest
-    container_name: "miner1"
-    environment:
-      - PEERS=node1:8000
-      - NODE_PORT=8000
-    command: ["python3", "miner.py"]
-
-  miner2:
-    image: runestone:latest
-    container_name: "miner2"
-    environment:
-      - PEERS=node1:8000
-      - NODE_PORT=8000
-    command: ["python3", "miner.py"]
-
   redis:
     image: redis:latest
 

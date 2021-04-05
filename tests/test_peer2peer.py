@@ -28,7 +28,7 @@ class TestPeer2Peer(unittest.TestCase):
     def test_peer2peer_message_block(self):
         block = self.miner.compile_block()
         block = self.miner.do_proof_of_work(block)
-        if self.blockchain.verify(new_block=block):
+        if self.blockchain.verify_blockchain(new_block=block):
             p2p = PeerToPeerMessage(block=block.to_dict(), timestamp=int(time.time()))
             self.assertTrue(p2p.block)
             self.assertTrue(p2p.timestamp)

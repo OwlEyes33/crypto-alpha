@@ -1,4 +1,4 @@
-# Coin v 0.3
+# Unamed Coin
 
 Coin is an open source peer to peer distributed ledger, better known as a cryptocurrency.
 The white paper for the blockchain implementation can be found here. The entire codebase is written in Python 3. Major influence 

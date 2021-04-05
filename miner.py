@@ -50,7 +50,7 @@ class Miner(object):
                 with open('blockchain.dat', 'wb') as f:
                     f.write(r.content)
 
-                if self.blockchain.verify():
+                if self.blockchain.verify_blockchain():
                     os.remove('blockchain.backup')
                 else:
                     os.remove('blockchain.dat')
@@ -92,6 +92,7 @@ class Miner(object):
             t = Thread(target=target, args=(peer, p2p))
             t.start()
 
+    # Todo: Transactions should be sorted by timestamp
     def compile_block(self):
         data = str()
         i = 0
@@ -146,7 +147,7 @@ class Miner(object):
                 block = self.do_proof_of_work(block)
                 # Verify a block
                 logging.debug("Verifying the block")
-                if self.blockchain.verify(new_block=block):
+                if self.blockchain.verify_blockchain(new_block=block):
                     # Write the block
                     logging.debug("Writing a new block")
                     self.blockchain.write_new_block(block)

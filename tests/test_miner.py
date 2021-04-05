@@ -51,5 +51,5 @@ class TestMiner(unittest.TestCase):
         block = self.miner.do_proof_of_work(block)
         self.assertIsNotNone(block.magic_number)
         self.assertIsNotNone(block.sha512hash)
-        self.assertTrue(self.blockchain.verify(new_block=block))
+        self.assertTrue(self.blockchain.verify_blockchain(new_block=block))
 

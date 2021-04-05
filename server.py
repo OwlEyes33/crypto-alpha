@@ -84,7 +84,7 @@ class NewBlock(object):
 
     def handle_new_block(self, block):
         logging.debug("Recieved a new block from P2P request")
-        if self.blockchain.verify(new_block=block):
+        if self.blockchain.verify_blockchain(new_block=block):
             logging.debug("Block is verified, writing.")
             self.blockchain.write_new_block(block)
             logging.debug("Wrote block.")

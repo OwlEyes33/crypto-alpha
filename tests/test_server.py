@@ -126,11 +126,11 @@ class TestServer(unittest.TestCase):
         block = self.miner.compile_block()
         block = self.miner.do_proof_of_work(block)
         timestamp = int(time.time())
-        if self.blockchain.verify(new_block=block):
+        if self.blockchain.verify_blockchain(new_block=block):
             p2p = PeerToPeerMessage(block=block.to_json(), timestamp=timestamp)
             result = self.client.simulate_post('/api/block', body=p2p.to_json())
             self.assertLessEqual(result.status_code, 299)
-        self.blockchain.verify()
+        self.blockchain.verify_blockchain()
         self.test_blockchain_file()
 
         # Test cached p2p message

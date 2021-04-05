@@ -83,16 +83,16 @@ class TestBlockchain(unittest.TestCase):
     def test_verify_new_block(self):
         block = self.miner.compile_block()
         block = self.miner.do_proof_of_work(block)
-        self.assertTrue((self.blockchain.verify(new_block=block)))
+        self.assertTrue((self.blockchain.verify_blockchain(new_block=block)))
 
     # Todo: Test that duplicate transactions cannot exist
     def test_verify_blockchain(self):
-        self.assertTrue(self.blockchain.verify())
+        self.assertTrue(self.blockchain.verify_blockchain())
 
     def test_write_new_block(self):
         block = self.miner.compile_block()
         block = self.miner.do_proof_of_work(block)
-        self.assertTrue((self.blockchain.verify(new_block=block)))
+        self.assertTrue((self.blockchain.verify_blockchain(new_block=block)))
         self.blockchain.write_new_block(block)
 
     def test_write_multiple_blocks(self):
@@ -105,5 +105,5 @@ class TestBlockchain(unittest.TestCase):
             block = self.miner.do_proof_of_work(block)
             self.assertIsNotNone(block.magic_number)
             self.assertIsNotNone(block.sha512hash)
-            self.assertTrue(self.blockchain.verify(new_block=block))
+            self.assertTrue(self.blockchain.verify_blockchain(new_block=block))
             self.blockchain.write_new_block(block=block)

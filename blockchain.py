@@ -14,9 +14,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 class Blockchain(object):
     def __init__(self):
-        self.god_wallet = 'b2231abb-c5fd-49a7-a471-d248dd888df0'
-        self.lines = list()
-        self.placeholder = 0
         self.sha512hash = False
         self.file_handler = None
         self.redis_cli = Redis(host='redis')
@@ -59,8 +56,34 @@ class Blockchain(object):
             else:
                 break
 
-    # Todo: Verify that a given transaction is not in the blockchain, i.e. duplicate transactions
-    def verify(self, new_block=None):
+    @staticmethod
+    def verify_block_transactions(wallets, block, new_block=False):
+        block.get_block_transactions()
+        for transaction in block.transactions:
+            # For each transaction in the blockchain, build up a balance for each wallet
+            if new_block:
+                if transaction.initiator in wallets.keys():
+                    wallets[transaction.initiator] -= float(transaction.amount)
+                if transaction.recipient in wallets.keys():
+                    wallets[transaction.recipient] += float(transaction.amount)
+
+            # Verify the transaction signature
+            if not transaction.verify_signature():
+                raise UnverifiedTransactionSignature
+
+    @staticmethod
+    def verify_block(block):
+        # Verify the proof of work on the block
+        verified_hash = block.sha512hash
+        sha512hash = block.generate_hash()
+        if sha512hash != verified_hash:
+            raise IncorrectHash
+        block.check_proof_of_work()
+        if not block.check_proof_of_work():
+            raise UnverifiedBlock
+
+    # Todo: Verify there are no duplicate transactions
+    def verify_blockchain(self, new_block=None):
         tracked_wallets = dict()
         with open("blockchain.dat", "r") as self.file_handler:
             if new_block:
@@ -70,32 +93,10 @@ class Blockchain(object):
                     block = next(self.read_block())
                     if new_block and new_block.sha512hash == block.sha512hash:
                         raise DuplicateBlock
+                    Blockchain.verify_block(block)
+                    Blockchain.verify_block_transactions(tracked_wallets, block, new_block=new_block)
                 except StopIteration:
                     break
-
-                # Verify the proof of work on the block
-                verified_hash = block.sha512hash
-                sha512hash = block.generate_hash()
-                if sha512hash != verified_hash:
-                    raise IncorrectHash
-                block.check_proof_of_work()
-                if not block.check_proof_of_work():
-                    raise UnverifiedBlock
-
-                # For each transaction in the block...
-                block.get_block_transactions()
-                for transaction in block.transactions:
-                    # For each transaction in the blockchain, build up a balance for each wallet
-                    # found in the new block
-                    if new_block:
-                        if transaction.initiator in tracked_wallets.keys():
-                            tracked_wallets[transaction.initiator] -= float(transaction.amount)
-                        if transaction.recipient in tracked_wallets.keys():
-                            tracked_wallets[transaction.recipient] += float(transaction.amount)
-
-                    # Verify the transaction RSA signature
-                    if not transaction.verify_signature():
-                        raise UnverifiedTransactionSignature
 
             if new_block:
 
